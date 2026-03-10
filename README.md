@@ -52,7 +52,7 @@ A **mobile authentication system** built with **React Native (Expo) and Node.js*
 - Expo Screen Capture
 
 ### Backend
-- Node.js
+- Bun.js
 - Express
 - Prisma
 - PostgreSQL
