@@ -33,6 +33,56 @@ const authLimiter = rateLimit({
 
 authRoute.use(authLimiter);
 
+/* ---------------- VALIDATION ---------------- */
+
+// export const SignupSchema = z.object({
+//   email: z.string().email("Invalid email").trim().toLowerCase(),
+
+//   password: z
+//     .string()
+//     .min(8, "Password must be at least 8 characters")
+//     .max(50, "Password too long")
+//     .regex(/[A-Z]/, "Must contain uppercase letter")
+//     .regex(/[a-z]/, "Must contain lowercase letter")
+//     .regex(/[0-9]/, "Must contain number")
+//     .regex(/[^A-Za-z0-9]/, "Must contain special character"),
+// });
+
+// export const SigninSchema = z.object({
+//   email: z.string().email("Invalid email").trim().toLowerCase(),
+
+//   password: z.string().min(8).max(50),
+// });
+
+// export const VerifyOtpSchema = z.object({
+//   email: z.string().email(),
+//   otp: z
+//     .string()
+//     .length(6, "OTP must be 6 digits")
+//     .regex(/^\d+$/, "OTP must contain only numbers"),
+// });
+
+// export const RegisterDeviceSchema = z.object({
+//   deviceId: z.string().min(5),
+//   publicKey: z.string(),
+//   deviceModel: z.string().optional(),
+//   osVersion: z.string().optional(),
+// });
+
+// export const ChallengeSchema = z.object({
+//   deviceId: z.string().min(5),
+// });
+
+// export const VerifySignatureSchema = z.object({
+//   deviceId: z.string(),
+//   nonce: z.string(),
+//   signature: z.string(),
+// });
+
+// export const RefreshTokenSchema = z.object({
+//   refreshToken: z.string(),
+// });
+
 /* ---------------- SIGNUP ---------------- */
 
 authRoute.post("/signup", async (req, res) => {
@@ -260,7 +310,12 @@ authRoute.post("/register-device", async (req, res) => {
     }
 
     const secret = process.env.JWT_SECRET!;
-    const decoded: any = jwt.verify(token, secret);
+    let decoded: any;
+    try {
+      decoded = jwt.verify(token, secret);
+    } catch {
+      return res.status(401).json({ message: "Token expired" });
+    }
 
     const userId = decoded.id;
 
@@ -315,7 +370,12 @@ authRoute.post("/challenge", async (req, res) => {
     }
 
     const secret = process.env.JWT_SECRET!;
-    const decoded: any = jwt.verify(token, secret);
+    let decoded: any;
+    try {
+      decoded = jwt.verify(token, secret);
+    } catch {
+      return res.status(401).json({ message: "Token expired" });
+    }
 
     const userId = decoded.id;
 
@@ -535,7 +595,11 @@ authRoute.post("/refresh-token", async (req, res) => {
 
     const { refreshToken } = parsed.data;
 
-    const sessions = await prisma.session.findMany();
+    const sessions = await prisma.session.findMany({
+      include: {
+        device: true,
+      },
+    });
 
     let session = null;
 
@@ -562,7 +626,7 @@ authRoute.post("/refresh-token", async (req, res) => {
     const accessToken = jwt.sign(
       {
         id: session.userId,
-        deviceId: session.deviceDbId,
+        deviceId: session.device.deviceId,
       },
       process.env.JWT_SECRET!,
       { expiresIn: "15m" },
@@ -640,7 +704,12 @@ authRoute.post("/register-public-key", async (req, res) => {
       });
     }
 
-    const decoded: any = jwt.verify(token, process.env.JWT_SECRET!);
+    let decoded: any;
+    try {
+      decoded = jwt.verify(token, process.env.JWT_SECRET!);
+    } catch {
+      return res.status(401).json({ message: "Token expired" });
+    }
 
     const userId = decoded.id;
 
