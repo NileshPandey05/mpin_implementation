@@ -6,7 +6,6 @@ import axios from "axios";
 import { saveAccessToken } from "@/storage/secureStore";
 
 export default function OtpScreen() {
-
   const { email } = useLocalSearchParams();
 
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
@@ -14,7 +13,6 @@ export default function OtpScreen() {
   const inputs = useRef<Array<TextInput | null>>([]);
 
   const handleChange = (text: string, index: number) => {
-
     const newOtp = [...otp];
     newOtp[index] = text;
 
@@ -32,7 +30,6 @@ export default function OtpScreen() {
   };
 
   const handleVerifyOtp = async () => {
-
     const otpValue = otp.join("");
 
     const result = VerifyOtpSchema.safeParse({
@@ -46,32 +43,25 @@ export default function OtpScreen() {
     }
 
     try {
-
       const response = await axios.post(
         "http://10.0.0.103:3000/api/v1/auth/verify-otp",
-        result.data
+        result.data,
       );
 
-      await saveAccessToken(response.data.token)
-      console.log(response.data.token)
+      await saveAccessToken(response.data.token);
+      console.log(response.data.token);
 
       console.log(response.data);
 
       router.push("/security-check");
-
     } catch (error: any) {
-
       console.log(error.response?.data);
-
     }
   };
 
   return (
     <View className="flex-1 justify-center px-6 bg-white">
-
-      <Text className="text-3xl font-bold mb-4">
-        Verify OTP
-      </Text>
+      <Text className="text-3xl font-bold mb-4">Verify OTP</Text>
 
       <Text className="text-gray-500 mb-8">
         Enter the 6 digit code sent to your email
@@ -80,11 +70,12 @@ export default function OtpScreen() {
       {/* OTP BOXES */}
 
       <View className="flex-row justify-between mb-10">
-
         {otp.map((digit, index) => (
           <TextInput
             key={index}
-            ref={(ref) => (inputs.current[index] = ref)}
+            ref={(ref) => {
+              inputs.current[index] = ref;
+            }}
             value={digit}
             onChangeText={(text) => handleChange(text, index)}
             onKeyPress={({ nativeEvent }) => {
@@ -97,7 +88,6 @@ export default function OtpScreen() {
             className="w-12 h-14 border border-gray-300 rounded-xl text-center text-lg"
           />
         ))}
-
       </View>
 
       <Text
@@ -106,7 +96,6 @@ export default function OtpScreen() {
       >
         Verify OTP
       </Text>
-
     </View>
   );
 }
