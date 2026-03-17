@@ -12,6 +12,7 @@ import * as SecureStore from "expo-secure-store";
 import { api } from "@/lib/api";
 import { generateKeyPair } from "@/security/keypair";
 import { encryptPrivateKey } from "@/security/mpinCrypto";
+import { saveSecureMpin } from "@/storage/secureStore";
 
 export default function CreateMpinScreen() {
   const [pin, setPin] = useState("");
@@ -40,6 +41,9 @@ export default function CreateMpinScreen() {
       /* Encrypt private key with MPIN */
 
       await encryptPrivateKey(privateKey, mpin);
+
+      /* Store MPIN behind biometrics */
+      await saveSecureMpin(mpin);
 
       /* Get device id */
 
