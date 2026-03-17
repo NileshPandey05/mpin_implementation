@@ -27,3 +27,17 @@ export const clearTokens = async () => {
   await SecureStore.deleteItemAsync(ACCESS_TOKEN);
   await SecureStore.deleteItemAsync(REFRESH_TOKEN);
 };
+
+export const saveSecureMpin = async (mpin: string) => {
+  await SecureStore.setItemAsync("secure_mpin", mpin, {
+    keychainAccessible: SecureStore.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
+    requireAuthentication: true,
+  });
+};
+
+export const getSecureMpin = async () => {
+  return await SecureStore.getItemAsync("secure_mpin", {
+    keychainAccessible: SecureStore.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
+    requireAuthentication: true,
+  });
+};
