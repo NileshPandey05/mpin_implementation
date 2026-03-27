@@ -38,8 +38,7 @@ A **mobile authentication system** built with **React Native (Expo) and Node.js*
 
 ## 🔄 Authentication Flow Diagram
 
-![Authentication Flow](/auth-flow.png)
-
+<img width="1250" height="2272" alt="image" src="https://github.com/user-attachments/assets/1c56ce4c-e736-4677-9006-1d6e876f7db5" />
 ---
 
 ## 🏗 Tech Stack
